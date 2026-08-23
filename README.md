@@ -34,7 +34,21 @@ Lessons come in four shapes: `vocab`, `grammar`, `culture`, `reading`. Stories c
 
 ## How the learning works
 
-**Spaced repetition.** Each word carries a mastery level from 0 to 5. Getting it right pushes the next review out along a fixed ladder of 0, 1, 3, 7, 14 and 30 days. Getting it wrong pulls it back. The home screen derives a live "due now" count straight from that state, so there is no queue to rebuild and nothing to sync.
+**Spaced repetition.** Each word carries a mastery level from 0 to 5. Getting it right pushes the next review out along a fixed ladder of 0, 1, 3, 7, 14 and 30 days. Getting it wrong drops it one rung, never all the way back to zero. The home screen derives a live "due now" count straight from that state, so there is no queue to rebuild and nothing to sync.
+
+```mermaid
+graph LR
+  L0["level 0<br/>today"] -->|correct| L1["level 1<br/>1 day"]
+  L1 -->|correct| L2["level 2<br/>3 days"]
+  L2 -->|correct| L3["level 3<br/>7 days"]
+  L3 -->|correct| L4["level 4<br/>14 days"]
+  L4 -->|correct| L5["level 5<br/>30 days"]
+  L1 -.->|wrong| L0
+  L2 -.->|wrong| L1
+  L3 -.->|wrong| L2
+  L4 -.->|wrong| L3
+  L5 -.->|wrong| L4
+```
 
 **Weak words.** Anything stuck at mastery 0 or 1 is available as its own flashcard deck, so you can drill what is actually failing without waiting for a timer to fire.
 
