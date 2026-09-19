@@ -1,0 +1,54 @@
+name: Publish alternate unsigned IPA archive
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/publish-alternate-ipa.yml
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  alternate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download original build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          gh run download 35472364763 --name Ferbun-1.5.4-unsigned-ipa --dir dist
+          printf '%s  %s\n' cd9ba39aa614153895cb56b560b337ecb3d3d8be1644bb33ac77df1478a3e20e dist/Ferbun-1.5.4-unsigned.ipa | sha256sum -c -
+      - name: Repack without compression
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          src='dist/Ferbun-1.5.4-unsigned.ipa'
+          dst='dist/Ferbun-1.5.4-unsigned-compatible.ipa'
+          with zipfile.ZipFile(src) as original, zipfile.ZipFile(dst, 'w', compression=zipfile.ZIP_STORED, allowZip64=True) as out:
+              for item in original.infolist():
+                  if item.is_dir():
+                      continue
+                  data=original.read(item.filename)
+                  replacement=zipfile.ZipInfo(item.filename)
+                  replacement.date_time=item.date_time
+                  replacement.external_attr=item.external_attr
+                  replacement.create_system=item.create_system
+                  replacement.compress_type=zipfile.ZIP_STORED
+                  out.writestr(replacement,data)
+          with zipfile.ZipFile(dst) as out:
+              assert out.testzip() is None
+              assert any(n.startswith('Payload/') and n.endswith('.app/Info.plist') for n in out.namelist())
+          PY
+          ls -lh dist/Ferbun-1.5.4-unsigned-compatible.ipa
+          sha256sum dist/Ferbun-1.5.4-unsigned-compatible.ipa
+      - name: Attach alternate IPA to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload v1.5.4-unsigned dist/Ferbun-1.5.4-unsigned-compatible.ipa
