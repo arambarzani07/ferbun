@@ -1,0 +1,36 @@
+name: Publish unsigned IPA release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/publish-unsigned-ipa.yml
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download verified IPA artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          gh run download 35472364763 --name Ferbun-1.5.4-unsigned-ipa --dir dist
+          printf '%s  %s\n' cd9ba39aa614153895cb56b560b337ecb3d3d8be1644bb33ac77df1478a3e20e dist/Ferbun-1.5.4-unsigned.ipa | sha256sum -c -
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh release create v1.5.4-unsigned dist/Ferbun-1.5.4-unsigned.ipa \
+            --target b9bd37fffa5696aeb5feb167b742a8b8cd6b3b46 \
+            --title 'Fêrbûn 1.5.4 — unsigned iOS IPA' \
+            --notes 'Unsigned iOS device build from commit b9bd37fffa5696aeb5feb167b742a8b8cd6b3b46 (Actions run 35472364763). The IPA must be signed with a matching provisioning profile before installation on an iPhone. SHA-256: cd9ba39aa614153895cb56b560b337ecb3d3d8be1644bb33ac77df1478a3e20e.'
