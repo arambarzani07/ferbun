@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Fêrbûn — Learn Kurdish",
+    "name": "Fêrbûn Trivia",
     "slug": "ferbun",
-    "version": "1.5.4",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#E85D00"
+      "backgroundColor": "#0B1020"
     },
     "ios": {
       "supportsTablet": false,
@@ -22,11 +22,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#E85D00"
+        "backgroundColor": "#0B1020"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.ferbun.app",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -41,7 +41,7 @@
       [
         "expo-notifications",
         {
-          "color": "#E85D00"
+          "color": "#F59E0B"
         }
       ]
     ],
