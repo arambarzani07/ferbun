@@ -3,7 +3,7 @@ name: Build unsigned iOS IPA
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [trivia-mvp]
     paths:
       - .github/workflows/unsigned-ios.yml
 
@@ -50,15 +50,15 @@ jobs:
             exit 1
           fi
           cp -R "$APP" dist/Payload/
-          (cd dist && zip -q -r -y Ferbun-1.5.4-unsigned.ipa Payload)
-          unzip -t dist/Ferbun-1.5.4-unsigned.ipa
+          (cd dist && zip -q -r -y Ferbun-Trivia-2.0.0-unsigned.ipa Payload)
+          unzip -t dist/Ferbun-Trivia-2.0.0-unsigned.ipa
           if codesign --verify --deep --strict "$APP" >/dev/null 2>&1; then
             echo 'Expected an unsigned application' >&2
             exit 1
           fi
       - uses: actions/upload-artifact@v4
         with:
-          name: Ferbun-1.5.4-unsigned-ipa
-          path: dist/Ferbun-1.5.4-unsigned.ipa
+          name: Ferbun-Trivia-2.0.0-unsigned-ipa
+          path: dist/Ferbun-Trivia-2.0.0-unsigned.ipa
           if-no-files-found: error
           retention-days: 30
